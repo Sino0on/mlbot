@@ -82,7 +82,7 @@ async def process_country_callback(callback: types.CallbackQuery, callback_data:
 
     # Создаем новую клавиатуру с тарифами
     packs = get_all_packs()
-    cities = [(f"💎 {good['title']}", f'{good['title']}') for good in packs]
+    cities = [(f"💎 {good['title']}", f'{good["title"]}') for good in packs]
     buttons = [
         [
             types.InlineKeyboardButton(text=text, callback_data=CityCallback(name=name, country=country_name).pack())
@@ -180,9 +180,9 @@ async def process_like_write_bots(message: Message, state: FSMContext) -> None:
             "Узбекистан": "uz",
         }
         recvisits = db.get_recvisits(region=countres[data['region']])
-
+        a = "\n".join([f"{a.title} - {a.number}" for a in recvisits])
         await message.reply(
-            f"""Пользователь найден - {user}\nПожалуйста отправьте чек оплаты\n{"\n".join([f"{a.title} - {a.number}" for a in recvisits])}\nСумма перевода - {data['price']}""",
+            f'Пользователь найден - {user}\nПожалуйста отправьте чек оплаты\n{a}\nСумма перевода - {data["price"]}',
             reply_markup=keyboard,
         )
     else:
@@ -231,7 +231,7 @@ async def process_image_upload(message: Message, state: FSMContext) -> None:
     ]
     buttons.append([types.InlineKeyboardButton(text="🕐 Оплатить", url=url)])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-    await bot.send_photo(chat_id='-1002290257071', photo=file_id, caption=f'Новый Чек ⬆️⬆️\nID заказа - {order['id']}\nОплата на аккаунт {data['user_id']} - {data['username']}\nСумма - {data['price']}\nРегион - {data['region']}', reply_markup=keyboard)
+    await bot.send_photo(chat_id='-1002290257071', photo=file_id, caption=f"Новый Чек ⬆️⬆️\nID заказа - {order['id']}\nОплата на аккаунт {data['user_id']} - {data['username']}\nСумма - {data['price']}\nРегион - {data['region']}", reply_markup=keyboard)
 
 @dp.message(Command("cancel"))
 @dp.message(F.text.casefold() == "cancel")
