@@ -24,7 +24,7 @@ from django.contrib.admin import StackedInline
 from states import PaymentState
 from utils import get_all_packs, get_user_id, create_payment, create_link
 
-from db import db
+from db import db, single
 
 countres = {
             "Кыргызстан": "kg",
@@ -184,9 +184,16 @@ async def process_like_write_bots(message: Message, state: FSMContext) -> None:
             "Узбекистан": "uz",
         }
         recvisits = db.get_recvisits(region=countres[data['region']])
+        single = db.get_single()
         a = "\n".join([f"{a.title} - {a.number}" for a in recvisits])
+        if countres[data['region']] == 'kg':
+            price = f'{float(data["price"]) * single["procent"]} сом'
+        elif countres[data['region']] == 'kz':
+            price = f'{float(data["price"]) * single["procent"] * 5,74} тенге'
+        elif countres[data['region']] == 'uz':
+            price = f'{float(data["price"]) * single["procent"] * 148,28} сум'
         await message.reply(
-            f'Пользователь найден - {user}\nПожалуйста отправьте чек оплаты\n{a}\nСумма перевода - {data["price"]}',
+            f'Пользователь найден - {user}\nПожалуйста отправьте чек оплаты\n{a}\nСумма перевода - {data["price"] * single["procent"]}',
             reply_markup=keyboard,
         )
     else:
