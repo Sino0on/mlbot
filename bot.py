@@ -188,10 +188,13 @@ async def process_like_write_bots(message: Message, state: FSMContext) -> None:
         a = "\n".join([f"{a.title} - {a.number}" for a in recvisits])
         if countres[data['region']] == 'kg':
             price = f'{float(data["price"]) * single["procent"]} сом'
+            await state.update_data(price=float(data["price"]) * single["procent"])
         elif countres[data['region']] == 'kz':
-            price = f'{float(data["price"]) * single["procent"] * 5,74} тенге'
+            price = f'{float(data["price"]) * single["procent"] * 5.74} тенге'
+            await state.update_data(price=float(data["price"]) * single["procent"] * .74)
         elif countres[data['region']] == 'uz':
-            price = f'{float(data["price"]) * single["procent"] * 148,28} сум'
+            price = f'{float(data["price"]) * single["procent"] * 148.28} сум'
+            await state.update_data(price=float(data["price"]) * single["procent"] * 148.28)
         await message.reply(
             f'Пользователь найден - {user}\nПожалуйста отправьте чек оплаты\n{a}\nСумма перевода - {data["price"] * single["procent"]}',
             reply_markup=keyboard,
