@@ -1,3 +1,6 @@
+from datetime import datetime
+
+import pytz
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy import select
 from decouple import config
@@ -18,15 +21,18 @@ class MyDatabase:
         self.order = order
         self.recvisity = recvisity
 
-    def create_order(self, price, user_id, region, good_id, order_id, link, status='waiting'):
+    def create_order(self, price, user_id, region, good_id, order_id, link, username, status='waiting'):
+        bishkek_tz = pytz.timezone("Asia/Bishkek")
         payload = {
             "price": price,
             "user_id": user_id,
+            "username": username,
             "region": region,
             "good_id": good_id,
             "order_id": order_id,
             "link": link,
             "status": status,
+            "created_at": datetime.now(tz=bishkek_tz)
         }
         with self.engine.connect() as conn:
             das = conn.execute(self.order.insert(),

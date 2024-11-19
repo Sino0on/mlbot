@@ -26,6 +26,11 @@ from utils import get_all_packs, get_user_id, create_payment, create_link
 
 from db import db
 
+countres = {
+            "Кыргызстан": "kg",
+            "Казахстан": "kz",
+            "Узбекистан": "uz",
+        }
 
 TOKEN = '5346235377:AAGg1mWc4FPRxGn1GFcnOBcj75MMLlrAJlA'
 
@@ -205,26 +210,28 @@ async def process_image_upload(message: Message, state: FSMContext) -> None:
         [types.InlineKeyboardButton(text="✍️ Поддержка", url=data_from_db['podderjka']),
          types.InlineKeyboardButton(text="✅ Канал", url=data_from_db['canal']), ]
     ]
-    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-    await message.reply(
-        "✅Спасибо.\n✅Пожалуйста дождитесь модерации оплаты",
-        reply_markup=keyboard
-    )
     data = await state.get_data()
+
     pprint(data)
     data_from_db = db.get_single()
-    response = create_payment(data['user_id'], str(data['price']), data_from_db['mail'])
-    pprint(response)
-    response = create_link(response['data']['order_id'])
+    response2, good_id = create_payment(data['user_id'], str(data['price']), data_from_db['mail'])
+    pprint(response2)
+    response = create_link(response2['data']['order_id'])
     url = response['data']['payment_url']
     await state.update_data(url=url)
+    order = db.create_order(float(data['price']), data['user_id'], countres[data['region']], good_id, response2['data']['order_id'], url, data['username'])
+    keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+    await message.reply(
+        f"✅Спасибо.\n✅Пожалуйста дождитесь модерации оплаты\nID заказа - {order['id']}",
+        reply_markup=keyboard
+    )
     buttons = [
         [types.InlineKeyboardButton(text="✅ Принять", callback_data=InputCallback(user_id=f'{message.from_user.id}', price=f"{data['price']}", status=True).pack()),
          types.InlineKeyboardButton(text="🚫 Отказ", callback_data=InputCallback(user_id=f'{message.from_user.id}', price=f"{data['price']}", status=False).pack()), ]
     ]
     buttons.append([types.InlineKeyboardButton(text="🕐 Оплатить", url=url)])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
-    await bot.send_photo(chat_id='-1002290257071', photo=file_id, caption=f'Новый Чек ⬆️⬆️\nОплата на аккаунт {data['user_id']} - {data['username']}\nСумма - {data['price']}\nРегион - {data['region']}', reply_markup=keyboard)
+    await bot.send_photo(chat_id='-1002290257071', photo=file_id, caption=f'Новый Чек ⬆️⬆️\nID заказа - {order['id']}\nОплата на аккаунт {data['user_id']} - {data['username']}\nСумма - {data['price']}\nРегион - {data['region']}', reply_markup=keyboard)
 
 @dp.message(Command("cancel"))
 @dp.message(F.text.casefold() == "cancel")

@@ -69,7 +69,7 @@ def create_payment(user, price, mail):
     referer = "https://www.mobapay.com/"
     data = requests.post(url, headers={"Referer": referer}, data=json.dumps(payload))
     print(data.status_code)
-    return data.json()
+    return data.json(), good["id"]
 
 
 def create_link(id: int):

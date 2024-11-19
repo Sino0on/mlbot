@@ -63,15 +63,15 @@ class Recvisity(models.Model):
 
 
 class Order(models.Model):
-    price = models.PositiveIntegerField()
+    price = models.FloatField()
     region = models.CharField(choices=NAME_CHOICES, max_length=2)
     user_id = models.CharField(max_length=123)
     username = models.CharField(max_length=123)
     good_id = models.CharField(max_length=123)
     order_id = models.CharField(max_length=123)
-    link = models.CharField(max_length=123)
+    link = models.TextField()
     status = models.CharField(max_length=123)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, )
 
     def __str__(self):
         return f'{self.pk} - {self.user_id}'
