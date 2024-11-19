@@ -32,7 +32,7 @@ countres = {
             "Узбекистан": "uz",
         }
 
-TOKEN = '5346235377:AAGg1mWc4FPRxGn1GFcnOBcj75MMLlrAJlA'
+TOKEN = config('TOKEN')
 
 bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
