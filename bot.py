@@ -155,11 +155,11 @@ async def process_city_callback(callback: types.CallbackQuery, callback_data: Ci
     photo_url = good['icon']
     price = float(good['pay_channel_sub'][0]['price_local_sell_precision'])
     if countres[country_name] == 'kg':
-        price_str = f'{float(price) * single['procent']} сом'
+        price_str = f'{float(price) * single["procent"]} сом'
     elif countres[country_name] == 'kz':
-        price_str = f'{price * single['procent'] * 5.74} тенге'
+        price_str = f'{price * single["procent"] * 5.74} тенге'
     elif countres[country_name] == 'uz':
-        price_str = f'{price * single['procent'] * 148.28} сум'
+        price_str = f'{price * single["procent"] * 148.28} сум'
     await state.update_data(price=price)
 
     await bot.send_photo(
@@ -195,9 +195,9 @@ async def process_like_write_bots(message: Message, state: FSMContext) -> None:
         if countres[data['region']] == 'kg':
             price_str = f'{float(data["price"]) * single["procent"]} сом'
         elif countres[data['region']] == 'kz':
-            price_str = f'{data["price"] * single['procent'] * 5.74} тенге'
+            price_str = f'{data["price"] * single["procent"] * 5.74} тенге'
         elif countres[data['region']] == 'uz':
-            price_str = f'{data["price"] * single['procent'] * 148.28} сум'
+            price_str = f'{data["price"] * single["procent"] * 148.28} сум'
         else:
             price_str = ''
         await message.reply(
