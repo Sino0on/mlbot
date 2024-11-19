@@ -138,6 +138,7 @@ async def process_payment_to_end(callback: types.CallbackQuery, callback_data: I
 async def process_city_callback(callback: types.CallbackQuery, callback_data: CityCallback, state: FSMContext):
     city_name = callback_data.name
     country_name = callback_data.country
+    single = db.get_single()
     await state.update_data(region=callback_data.country)
     await callback.message.delete()
     buttons = [[
@@ -152,14 +153,19 @@ async def process_city_callback(callback: types.CallbackQuery, callback_data: Ci
     packs = get_all_packs()
     good = [i for i in packs if i['title'] == city_name][0]
     photo_url = good['icon']
-
-    price = good['pay_channel_sub'][0]['price_local_sell_precision']
+    price = float(good['pay_channel_sub'][0]['price_local_sell_precision']) * single['procent']
+    if countres[country_name] == 'kg':
+        price_str = f'{float(price) * single["procent"]} сом'
+    elif countres[country_name] == 'kz':
+        price_str = f'{price * 5.74} тенге'
+    elif countres[country_name] == 'uz':
+        price_str = f'{price * 148.28} сум'
     await state.update_data(price=price)
 
     await bot.send_photo(
         chat_id=callback.message.chat.id,
         photo=photo_url,
-        caption=f"Ты выбрал тариф {city_name.capitalize()} в стране {country_name.capitalize()}.\nСтоимость - {price} рублей",
+        caption=f"Ты выбрал тариф {city_name.capitalize()} в стране {country_name.capitalize()}.\nСтоимость - {price_str} ",
         reply_markup=keyboard
     )
 
@@ -187,16 +193,15 @@ async def process_like_write_bots(message: Message, state: FSMContext) -> None:
         single = db.get_single()
         a = "\n".join([f"{a.title} - {a.number}" for a in recvisits])
         if countres[data['region']] == 'kg':
-            price = f'{float(data["price"]) * single["procent"]} сом'
-            await state.update_data(price=float(data["price"]) * single["procent"])
+            price_str = f'{float(data['price']) * single["procent"]} сом'
         elif countres[data['region']] == 'kz':
-            price = f'{float(data["price"]) * single["procent"] * 5.74} тенге'
-            await state.update_data(price=float(data["price"]) * single["procent"] * .74)
+            price_str = f'{data['price'] * 5.74} тенге'
         elif countres[data['region']] == 'uz':
-            price = f'{float(data["price"]) * single["procent"] * 148.28} сум'
-            await state.update_data(price=float(data["price"]) * single["procent"] * 148.28)
+            price_str = f'{data['price'] * 148.28} сум'
+        else:
+            price_str = ''
         await message.reply(
-            f'Пользователь найден - {user}\nПожалуйста отправьте чек оплаты\n{a}\nСумма перевода - {data["price"] * single["procent"]}',
+            f'Пользователь найден - {user}\nПожалуйста отправьте чек оплаты\n{a}\nСумма перевода - {price_str}',
             reply_markup=keyboard,
         )
     else:
