@@ -1,0 +1,27 @@
+version: "3.10"
+
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    env_file:
+      - .env
+
+    volumes:
+      - "./postgres:/var/lib/postgresql/data"
+
+  app:
+    build: .
+    volumes:
+      - .:/core
+      - ./apps/static:/app/apps/static
+      - ./apps/media:/app/apps/media
+    ports:
+      - "8014:8014"
+    command: bash -c "python manage.py collectstatic --no-input && python manage.py showmigrations && python manage.py migrate && gunicorn core.wsgi:application -b 0.0.0.0 -p 8014"
+
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    restart: always
