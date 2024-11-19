@@ -155,7 +155,7 @@ async def process_city_callback(callback: types.CallbackQuery, callback_data: Ci
     photo_url = good['icon']
     price = float(good['pay_channel_sub'][0]['price_local_sell_precision']) * single['procent']
     if countres[country_name] == 'kg':
-        price_str = f'{float(price) * single["procent"]} сом'
+        price_str = f'{float(price)} сом'
     elif countres[country_name] == 'kz':
         price_str = f'{price * 5.74} тенге'
     elif countres[country_name] == 'uz':
