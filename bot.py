@@ -193,11 +193,11 @@ async def process_like_write_bots(message: Message, state: FSMContext) -> None:
         single = db.get_single()
         a = "\n".join([f"{a.title} - {a.number}" for a in recvisits])
         if countres[data['region']] == 'kg':
-            price_str = f'{float(data['price']) * single["procent"]} сом'
+            price_str = f'{float(data["price"]) * single["procent"]} сом'
         elif countres[data['region']] == 'kz':
-            price_str = f'{data['price'] * 5.74} тенге'
+            price_str = f'{data["price"] * 5.74} тенге'
         elif countres[data['region']] == 'uz':
-            price_str = f'{data['price'] * 148.28} сум'
+            price_str = f'{data["price"] * 148.28} сум'
         else:
             price_str = ''
         await message.reply(
