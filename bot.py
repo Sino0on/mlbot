@@ -50,6 +50,7 @@ class CityCallback(CallbackData, prefix="city"):
 
 class InputCallback(CallbackData, prefix="input"):
     user_id: str
+    order_id: int
     price: str
     status: bool
 
@@ -114,12 +115,15 @@ async def process_payment_to_start(callback: types.CallbackQuery, state: FSMCont
 async def process_payment_to_end(callback: types.CallbackQuery, callback_data: InputCallback, state: FSMContext):
     user_id = callback_data.user_id
     status = callback_data.status
+    order_id = callback_data.order_id
     data = await state.get_data()
     if status:
+        db.update_order_status(order_id, 'paid')
         buttons = [
             [types.InlineKeyboardButton(text="✅✅ Принято и оплачено ✅✅", callback_data='payment_accepted')]
         ]
     else:
+        db.update_order_status(order_id, 'not paid')
         buttons = [
             [types.InlineKeyboardButton(text="🚫🚫 Отказано 🚫🚫", callback_data='payment_accepted')]
         ]
@@ -226,8 +230,8 @@ async def process_image_upload(message: Message, state: FSMContext) -> None:
         reply_markup=keyboard
     )
     buttons = [
-        [types.InlineKeyboardButton(text="✅ Принять", callback_data=InputCallback(user_id=f'{message.from_user.id}', price=f"{data['price']}", status=True).pack()),
-         types.InlineKeyboardButton(text="🚫 Отказ", callback_data=InputCallback(user_id=f'{message.from_user.id}', price=f"{data['price']}", status=False).pack()), ]
+        [types.InlineKeyboardButton(text="✅ Принять", callback_data=InputCallback(user_id=f'{message.from_user.id}', price=f"{data['price']}", status=True, order_id=order['id']).pack()),
+         types.InlineKeyboardButton(text="🚫 Отказ", callback_data=InputCallback(user_id=f'{message.from_user.id}', price=f"{data['price']}", status=False, order_id=order['id']).pack()), ]
     ]
     buttons.append([types.InlineKeyboardButton(text="🕐 Оплатить", url=url)])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)

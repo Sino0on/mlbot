@@ -2,8 +2,9 @@ from datetime import datetime
 
 import pytz
 from sqlalchemy import MetaData, create_engine
-from sqlalchemy import select
+from sqlalchemy import select, update
 from decouple import config
+
 
 
 name =  config('DB_NAME')
@@ -70,6 +71,33 @@ class MyDatabase:
             )
             items = items.mappings().all()
             return items[0]
+
+    def update_order_status(self, order_id, new_status):
+        """
+        Обновляет статус заказа в таблице shop_order.
+
+        :param order_id: ID заказа, статус которого нужно обновить.
+        :param new_status: Новый статус для обновления.
+        :return: Словарь с обновленным заказом.
+        """
+        with self.engine.connect() as conn:
+            # Формируем запрос на обновление
+            conn.execute(
+                update(self.order)
+                .where(self.order.c.id == order_id)
+                .values(status=new_status)
+            )
+            conn.commit()
+
+            # Извлекаем обновленный заказ для проверки
+            updated_item = conn.execute(
+                select(self.order).where(self.order.c.id == order_id)
+            )
+            updated_item = updated_item.mappings().all()
+            if updated_item:
+                return updated_item[0]
+            else:
+                return None
 
 
 engine = create_engine(f'postgresql+psycopg2://{user}:{password}@{host}/{name}')
