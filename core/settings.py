@@ -28,7 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['ml.sino0on.ru', 'www.ml.sino0on.ru']
+CSRF_TRUSTED_ORIGINS = ['https://ml.sino0on.ru', 'https://www.ml.sino0on.ru']
 
 # Application definition
 
