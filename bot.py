@@ -161,6 +161,7 @@ async def process_city_callback(callback: types.CallbackQuery, callback_data: Ci
     elif countres[country_name] == 'uz':
         price_str = f'{round(((price * single["procent"]) + price) * 148.28)} сум'
     await state.update_data(price=price)
+    await state.update_data(price_original=good['pay_channel_sub'][0]['price_local_sell_precision'])
 
     await bot.send_photo(
         chat_id=callback.message.chat.id,
@@ -233,7 +234,7 @@ async def process_image_upload(message: Message, state: FSMContext) -> None:
 
     pprint(data)
     data_from_db = db.get_single()
-    response2, good_id = create_payment(data['user_id'], str(data['price']), data_from_db['mail'])
+    response2, good_id = create_payment(data['user_id'], str(data['price_original']), data_from_db['mail'])
     pprint(response2)
     response = create_link(response2['data']['order_id'])
     url = response['data']['payment_url']

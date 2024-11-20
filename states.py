@@ -6,4 +6,5 @@ class PaymentState(StatesGroup):
     user_id = State()
     user = State()
     price = State()
+    price_original = State()
     check = State()

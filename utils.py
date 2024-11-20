@@ -7,7 +7,7 @@ id = "863071389 (12417)"
 
 
 def get_all_packs():
-    url = f"https://api.mobapay.com/api/app_shop?app_id=100000&user_id=330192529&server_id=9216&country=RU&language=en&network=&net=JMRU&coupon_id=&shop_id="
+    url = f"https://api.mobapay.com/api/app_shop?app_id=100000&country=RU&language=en&network=&net=JMRU&coupon_id=&shop_id="
 
     referer = "https://www.mobapay.com/"
 
@@ -36,10 +36,11 @@ def get_user_id(user: str):
 
 def create_payment(user, price, mail):
     packs = get_all_packs()
+    pprint(str(price))
     good = [
         i
         for i in packs
-        if i["pay_channel_sub"][0]["price_local_sell_precision"] == price
+        if i["pay_channel_sub"][0]["price_local_sell_precision"] == str(price)
     ][0]
 
     user_id = user.split(" ")[0]
